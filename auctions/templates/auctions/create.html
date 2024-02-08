@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="wrap">
+    
+    <div class="createform">
+        <h1>CREATE A NEW ONE</h1><br>
+        <form method="post" class="createfields">
+            {% csrf_token %}
+            {{form}}
+            <div class="select">
+                <label for="category">Category:</label>
+                <select name="category">
+                    <option value="">select</option>
+                    {% for category in categorys %}
+                        <option>{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="sub">
+                <input class="subsub" type="submit" placeholder="create">
+            </div>
+           
+        </form>
+    </div>
+</div>
+
+{% endblock%}

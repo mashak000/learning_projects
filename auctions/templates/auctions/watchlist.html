@@ -1,0 +1,28 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    Categories
+{% endblock %}
+
+{% block body %}
+<div class="cardWrapper">
+    <div style="display:flex;">
+        {% for listing in listings%}
+            {% if True %}
+                <a href="{% url 'listing' listing.auction%}" class="listingLink">
+                    <div class="listingCard">
+                        <h3>{{listing.auction}}</h3>
+                        <p>{{listing.description}}</p>
+                        <div class="price">
+                            {{listing.bid}}
+                        </div>
+                        {% if listing.image %}
+                            <image src="{{listing.image}}"></image>
+                        {% endif %}
+                    </div>
+                </a>
+            {% endif %}   
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

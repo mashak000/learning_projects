@@ -1,0 +1,23 @@
+{% extends "auctions/layout.html" %}
+
+
+{% block body %}
+    <div  class="cardWrapper">
+        {% for listing in listings%}
+            {% if listing.status %}
+                <div class="listingCard">
+                    <a href="{% url 'listing' listing.title %}" class="listingLink">
+                        <h3>{{listing.title}}</h3>
+                        <p style="font-size: 9pt;">{{listing.description}}</p>
+                        <div>
+                            Current price: {{listing.price.get.bid}}$
+                        </div>
+                        {% if listing.image %}
+                            <image style="margin-top:20px; max-width: 350px; max-height:300px; border-radius: 10pt;" src="{{listing.image}}"></image>
+                        {% endif %}
+                    </a>
+                </div> 
+            {% endif %}   
+        {% endfor %}
+    </div>
+{% endblock %}

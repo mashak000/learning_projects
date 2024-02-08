@@ -1,0 +1,98 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{listing.title}}
+{% endblock %}
+
+{% block body %}
+
+    
+<div class="one">
+    <h1>{{listing.title}}</h1>
+    <p>{{listing.description}}</p>
+    {% if listing.image %}
+        <image style="margin-top:20px; margin-bottom: 30px; max-width: 700px; max-height:700px; border-radius: 20pt;"src="{{listing.image}}"></image>
+    {% endif %}
+    <h3 style="margin-left: 40PX; margin-bottom: 20px;">Current price: <strong style="color: blue;">{{price.bid}} </strong>$</h6>
+
+
+    {% if listing.status %}
+        {% if message %}
+            <div class="error-message">
+                {{message}}
+            </div>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            {% if iswatched %}
+                <form action="{% url 'removeWatchlist' listing.id %}" class="watchlist" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-secondary" value="watchlist">
+                        Remove from watchlist
+                    </button>
+                </form>
+            {% else %}
+                <form action="{% url 'addWatchlist' listing.id %}" class="watchlist" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-warning" value="watchlist">
+                        <img style="width:20px;" src="https://img1.picmix.com/output/stamp/normal/4/8/1/6/2526184_cbe86.png">
+                        Add to watchlist
+                        <img style="width:20px;" src="https://img1.picmix.com/output/stamp/normal/4/8/1/6/2526184_cbe86.png">
+                    </button>
+                </form>
+            {% endif %}
+
+        {% endif %}
+
+
+        {% if user.is_authenticated %}
+            {% if listing.owner == request.user %}
+                <form  action="{% url 'close' listing.id %}" method="post" class="close">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-danger">close the listing</button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+
+        {% if user.is_authenticated %}
+        <div id="bid">
+            <form action="{% url 'addBid' listing.id %}" method="post">
+                {% csrf_token %}
+                {{form}}
+                <button style="height: 35px; margin-top: 32px;" class="btn btn-outline-light">make a bid</button>
+            </form>
+        </div>
+        {% endif %}
+        
+        <div class="comments-wrapper">
+            <h3>Comments</h3>
+            {% if user.is_authenticated %}
+                <form style="width: 500px; margin-bottom: 30px; padding:0;" action="{% url 'comment' listing.id %}" method="post">
+                    {% csrf_token %}
+                    <input style="background-color: white; border: 1px black dotted; padding: 10px; width: 500px; color:black;" class="commentin" type="text" placeholder="Leave your comment here" name="comment">
+                    <button style="margin-left: 50px; width: 200px; margin-right: 0;" class="btn btn-outline-light">Send</button>
+                </form>
+            {% endif %}
+            {% for comment in comments%}
+                <div class="comment">
+                    <p>{{comment.text}}</p>
+                    <p class="greycomment"> commented by {{comment.user}} on <i>{{comment.time}}</i></p>
+                    
+                </div>
+                    
+            {% endfor %}
+        </div>  
+        {% else %}
+            <div class="closedsorry">
+                <h1>THIS LISTING WAS SOLD</h1>
+            </div>
+            {% if listing.winner == request.user%}
+                <h3>and you the one who bought it</h3>
+            {% endif %}
+        {% endif %}
+
+    </div>
+    
+
+{% endblock %}  
