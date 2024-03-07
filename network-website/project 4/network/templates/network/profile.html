@@ -1,0 +1,59 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div style="border-radius: 10pt; background-color: {{profile.color}};">
+    <div class="wrapper" >
+        <div class="ava">
+            <image class="ava" src="{{profile.image}}"></image>
+        </div>
+        <h1>THIS IS PROFILE PAGE of {{profile.username}}</h1>
+        <div style="display: inline-flex;">
+            <div class="follower-count">
+                {{ c }} FOLLOWERS
+            </div>
+            <div class="follower-count">
+                {{ s }} FOLLOWINGS
+            </div>
+        </div>
+       
+        
+      
+        <!-- only for other users -->
+        {% if user.is_authenticated %}
+            {% if request.user.id != profile.id%}
+                <form action="{% url 'profile' profile.id %}" method="post">
+                    {% csrf_token %}
+                {% if request.user in profile.followers.all %}
+                    <input class="btn btn-danger" type="submit" name="unfollow" value="Unfollow" id="unfollow"></input>
+                {% else %}
+                    <input class="btn btn-primary" type="submit" value="Follow" name="follow" id="follow"></inputn>
+                {% endif %}
+                </form>
+            {% endif %}
+            {% if request.user.id == profile.id%}
+                <a class="editprofile" href="{% url 'editprofile' request.user.id %}">
+                    <button class="btn btn-outline-dark">
+                        Edit profile
+                    </button>
+                </a>
+            {% endif%} 
+
+        {% endif%}
+
+
+
+        <div class="users-post">
+            <h3> All user's posts: </h3><br>
+        {% for post in posts %}
+            <div class="single-post"> 
+                <h6>{{ post.text }}</h6>
+                {{ post.timestamp }}
+                <a href="{% url 'profile' post.author.id %}"><p>by {{ post.author }}</p></a>
+                <h6 id="likes_{{ post.id }}">{{ post.postlikes.all.count}} 💖</h6>  
+            </div>
+        {% endfor %}
+        </div>
+    </div> 
+
+</div>
+{% endblock %}

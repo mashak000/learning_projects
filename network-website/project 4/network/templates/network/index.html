@@ -1,0 +1,182 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+  <div class="wrapper">
+      
+    {% for post in page_obj %}
+        <div class="single-post" style="background-color: {{post.author.color}};">
+            <div id="futurefire_{{ post.id }}" class="v">
+              🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥<br>
+              🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥<br>
+              🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥<br>
+              🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥<br>
+              🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥<br>
+              🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥<br>
+              
+            </div>
+            <h6 id="contentN_{{ post.id }}">{{ post.text }}</h6>
+            <h6>{{ post.timestamp }}</h6>
+            <div style="display: inline-flex;">
+              <a href="{% url 'profile' post.author.id %}"><p>by {{ post.author }}</p></a>
+            {% if post.author.image %}
+              <image class="small-ava" src="{{ post.author.image}}"></image>
+            {% endif %}
+            </div>
+            
+            
+            <h6 id="likes_{{ post.id }}">{{ post.postlikes.all.count}} 🖤</h6>
+            
+
+            {% if user.is_authenticated %}
+              <div id="updatelike" onclick="updateLike(event, {{post.id}})">
+              {% if request.user.id != post.author.id %}
+                {% if post.id in yourlikes %}
+                  <button  name="unlike" value="💔" id="unlike_{{post.id}}">💔</button>
+                  <button  name="like" value="💖"  id="like_{{post.id}}" style="display:none">💖</button>
+                {% else %}
+                  <button  name="like" value="💖"  id="like_{{post.id}}">💖</button>
+                  <button  name="unlike" value="💔" id="unlike_{{post.id}}" style="display:none">💔</button>
+                {% endif %}
+              {% endif %}
+              </div>
+            {% endif%}
+            
+
+            <!--edit function-->
+            {% if request.user == post.author %}
+                <button type="button"  data-toggle="modal" data-target="#Modal_{{ post.id }}">
+                    Edit
+                </button>
+                <div class="modal fade" id="Modal_{{post.id}}" tabindex="9999" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          
+                        </div>
+                        <div class="modal-body">
+                          <textarea name="newtext" id="new_{{ post.id }}">{{post.text}}</textarea>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary" onclick="saveEdit( {{ post.id }} )">Save changes</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>  
+            {% endif %}
+        </div>
+    {% endfor %}
+  </div>
+
+    {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+    {% endif %}
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+    {% endif %}
+
+    
+    <script>
+      
+        function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              var cookies = document.cookie.split(';');
+              for (var i = 0; i < cookies.length; i++) {
+                  var cookie = jQuery.trim(cookies[i]);
+                  // Does this cookie string begin with the name we want?
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+        };
+
+      
+        
+        
+        
+
+        function saveEdit(id) {
+            const newtext = document.getElementById(`new_${id}`).value;
+            const contentN = document.getElementById(`contentN_${id}`);
+            const modal = document.getElementById(`Modal_${id}`);
+            fetch(`/edit/${id}`, {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken")},
+              body: JSON.stringify({
+                content: newtext
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              contentN.innerHTML = result.data;
+              modal.remove('show');
+              modal.setAttribute('aria-hidden', 'true');
+              modal.setAttribute('style', 'display: none');
+
+              const modalB =  document.getElementsByClassName('modal-backdrop');
+
+              for (i = 0; i<modalB.length; i++){
+                document.body.removeChild(modalB[i]);
+
+              }
+            });
+        }
+
+
+        function updateLike(event, id){
+          const btnLike = document.getElementById(`like_${id}`);
+          const btnUnlike = document.getElementById(`unlike_${id}`);
+          const amount = document.getElementById(`likes_${id}`);
+          let action = event.target.value;
+          if (action == "💔") {
+            fetch(`/like/${id}`, {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken")},
+              body: JSON.stringify({
+                content: "unlike"
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              amount.innerHTML = result.data + '🖤';
+              btnLike.style.display = 'block';
+              btnUnlike.style.display= 'none';
+
+              console.log(result.data)
+            })
+          } else {
+            fetch(`/like/${id}`, {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json", "X-CSRFToken": getCookie("csrftoken")},
+              body: JSON.stringify({
+                content: "like"
+              })
+            })
+            .then(response => response.json())
+            .then(result => {
+              amount.innerHTML = result.data + '🖤';
+              btnLike.style.display = 'none';
+              btnUnlike.style.display= 'block';
+              
+              console.log(result.data)
+            })
+            const fire = document.getElementById(`futurefire_${id}`);
+            console.log(fire)
+            fire.className = "fire";
+            
+          }
+        };
+     
+    </script>
+{% endblock %}

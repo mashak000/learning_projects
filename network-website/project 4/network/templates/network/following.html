@@ -1,0 +1,33 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div class="wrapper">
+        {% for post in page_obj %}
+            <div class="single-post" >
+                <h1>{{ post.author }}</h1>
+                <h6>{{ post.text }}</h6>
+                <h6>{{ post.text }}</h6>
+                <h6>{{ post.text }}</h6>
+                <h6>{{ post.text }}</h6>
+                {{ post.timestamp }}
+                <a href="{% url 'profile' post.author.id %}"><p>by {{ post.author }}</p></a>
+                {{ post.likes}} 💖
+                
+            </div>
+        {% endfor %}
+        <div>
+            {% if page_obj.has_previous %}
+            <div>
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            </div>
+            {% endif %}
+            {% if page_obj.has_next %}
+            <div>
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

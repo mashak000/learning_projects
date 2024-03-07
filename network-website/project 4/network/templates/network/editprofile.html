@@ -1,0 +1,27 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<div class="editpage">
+    
+    
+    <div class="wrapper">
+        <h1>Edit your profile info</h1>
+        <form action="{% url 'editprofile' user.id%}" method="post">
+            {% csrf_token %}
+            <label for="username">Username: </label>
+            <input name="username" value="{{ user.username }}"><br> 
+            <label for="email">Email: </label>
+            <input name="email" value="{{ user.email }}"> <br>
+            <label for="ava">Avatarka: </label>
+            <input name="ava" value="{{ user.image }}" placeholder="link to an image"><br>
+            <label for="password">Password: </label>
+            <input name="password" type="password" value="{{ user.password }}"> <br>
+            <label for="color">Color: </label>
+            <input name="color" type="color" value="{{ user.color }}"><br><br>
+            <input class="btn btn-outline-success" type="submit" value="save changes">
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

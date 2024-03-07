@@ -1,0 +1,18 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <div class="wrapper">
+        <div class="newpost">
+            <h1>New post</h1>
+            <form action="{% url 'newpost' %}" method="post">
+                {% csrf_token %}
+                <textarea id="post-text" name="text" placeholder="Your text here..." required></textarea><br>
+                <input class="btn btn-outline-danger" type="submit" value="post">
+            </form>
+
+        </div>
+        
+    </div>
+        
+
+{% endblock %}
